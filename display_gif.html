@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GIF Display Tool</title>
+    <style>
+        /* Add some basic CSS to style the layout */
+        body {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .gif-container {
+            width: 300px;
+            margin: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .gif-container img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Hide the file input element */
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Create a container to display multiple GIFs
+    <div class="gif-container">
+        <img src="C:\Users\86178\Desktop\bin\f-0_pred.gif" alt="GIF 1"
+            data-src="C:\Users\86178\Desktop\bin\f-0_pred.gif">
+        <div>GIF 1</div>
+    </div>
+
+    <div class="gif-container">
+        <img src="C:\Users\86178\Desktop\bin\f-1_pred.gif" alt="GIF 2"
+            data-src="C:\Users\86178\Desktop\bin\f-1_pred.gif">
+        <div>GIF 2</div>
+    </div> -->
+
+    <!-- Add more gif-container divs for additional GIFs -->
+
+    <!-- Optionally, you can add a button to add new GIFs dynamically -->
+    <button onclick="document.getElementById('fileInput').click()">Add GIF</button>
+
+    <!-- Start All and Stop All buttons -->
+    <button onclick="startAll()">Start All</button>
+    <button onclick="stopAll()">Stop All</button>
+
+    <!-- Hidden input element for selecting GIF file -->
+    <input type="file" id="fileInput" accept=".gif" onchange="addGIF()">
+
+    <script>
+        // Array to hold all GIF elements
+        var gifElements = [];
+
+        // Object to store the current frame index of each GIF
+        var gifCurrentFrame = {};
+
+        // Function to add GIF
+        function addGIF() {
+            var fileInput = document.getElementById("fileInput");
+            if (fileInput.files.length > 0) {
+                var gifContainer = document.createElement("div");
+                gifContainer.className = "gif-container";
+                var img = document.createElement("img");
+                img.src = URL.createObjectURL(fileInput.files[0]);
+                img.alt = "New GIF";
+                img.dataset.src = URL.createObjectURL(fileInput.files[0]); // Store the original source URL
+                gifContainer.appendChild(img);
+
+                // Add the name label with the actual file name
+                var name = document.createElement("div");
+                name.textContent = fileInput.files[0].name; // Set the name to the actual file name
+                gifContainer.appendChild(name);
+
+                document.body.appendChild(gifContainer);
+
+                // Add the GIF element to the array
+                gifElements.push({ img, name }); // Store both the image and name elements in the array
+                fileInput.value = ""; // Reset the input field for selecting a new file
+            }
+        }
+
+        // Function to start all GIFs
+        function startAll() {
+            gifElements.forEach(function (gif) {
+                gif.img.src = gif.img.dataset.src; // Play the GIF by setting its src to the original URL
+            });
+        }
+
+        // Function to stop all GIFs
+        function stopAll() {
+            gifElements.forEach(function (gif) {
+                gifCurrentFrame[gif.img.dataset.src] = getCurrentFrame(gif.img);
+                gif.img.src = gifCurrentFrame[gif.img.dataset.src]; // Set the src to the current frame data URL
+            });
+        }
+
+        // Function to get the data URL of the current frame of a GIF
+        function getCurrentFrame(gif) {
+            var canvas = document.createElement("canvas");
+            canvas.width = gif.width;
+            canvas.height = gif.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(gif, 0, 0, gif.width, gif.height);
+            return canvas.toDataURL("image/gif");
+        }
+    </script>
+</body>
+
+</html>
